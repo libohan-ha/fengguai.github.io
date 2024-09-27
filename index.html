@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>风卦寻物网站</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 60%;
+        }
+
+        td {
+            border: 1px solid #ddd;
+            padding: 20px;
+            font-size: 1.5em;
+            height: 80px;
+            width: 80px;
+            text-align: center;
+        }
+
+        .selectors {
+            margin: 20px 0;
+        }
+
+        .selector {
+            margin: 10px 0;
+        }
+
+        label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        select {
+            padding: 5px;
+            font-size: 1em;
+        }
+
+        #calculateBtn {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #calculateBtn:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>风卦寻物</h1>
+        
+        <!-- 表格展示 -->
+        <table id="symbolTable">
+            <tr>
+                <td id="a0b0">人</td>
+                <td id="a0b1">水</td>
+                <td id="a0b2">屋</td>
+            </tr>
+            <tr>
+                <td id="a1b0">地</td>
+                <td id="a1b1"></td>
+                <td id="a1b2">风</td>
+            </tr>
+            <tr>
+                <td id="a2b0">天</td>
+                <td id="a2b1"></td>
+                <td id="a2b2">叫</td>
+            </tr>
+        </table>
+        
+        <!-- 输入选择器 -->
+        <div class="selectors">
+            <div class="selector">
+                <label for="month">月份:</label>
+                <select id="month">
+                    <option value="1">1月</option>
+                    <option value="2">2月</option>
+                    <option value="3">3月</option>
+                    <option value="4">4月</option>
+                    <option value="5">5月</option>
+                    <option value="6">6月</option>
+                    <option value="7">7月</option>
+                    <option value="8" selected>8月</option>
+                    <option value="9">9月</option>
+                    <option value="10">10月</option>
+                    <option value="11">11月</option>
+                    <option value="12">12月</option>
+                </select>
+            </div>
+            <div class="selector">
+                <label for="day">日期:</label>
+                <select id="day">
+                    <!-- 动态生成1到30天 -->
+                    <script>
+                        for (let i = 1; i <= 30; i++) {
+                            document.write(`<option value="${i}">${i}日</option>`);
+                        }
+                    </script>
+                </select>
+            </div>
+            <div class="selector">
+                <label for="hour">时辰:</label>
+                <select id="hour">
+                    <option value="1">子时 (23:00 - 01:00)</option>
+                    <option value="2">丑时 (01:00 - 03:00)</option>
+                    <option value="3">寅时 (03:00 - 05:00)</option>
+                    <option value="4">卯时 (05:00 - 07:00)</option>
+                    <option value="5">辰时 (07:00 - 09:00)</option>
+                    <option value="6">巳时 (09:00 - 11:00)</option>
+                    <option value="7">午时 (11:00 - 13:00)</option>
+                    <option value="8">未时 (13:00 - 15:00)</option>
+                    <option value="9">申时 (15:00 - 17:00)</option>
+                    <option value="10">酉时 (17:00 - 19:00)</option>
+                    <option value="11">戌时 (19:00 - 21:00)</option>
+                    <option value="12">亥时 (21:00 - 23:00)</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- 计算按钮和结果 -->
+        <button id="calculateBtn">计算</button>
+        <div id="result">结果: </div>
+    </div>
+    
+    <script>
+        // 提示信息数组
+        const tips = {
+            '天': '逢天在眼前一物品就在方圆两米以内，认真查找身边可寻回失物。',
+            '地': '逢地得团园一是你的终究是你的，不用多费心寻找，最后会回到你手里。',
+            '人': '逢人人得信—发现丢失物品的时候，兴许可以借助见到的第一个人寻回失物。',
+            '水': '逢水水边显—-物品遗失在水边，仔细回想去过哪些有水的地方。',
+            '屋': '逢屋家里找—没有落入外人之手，尚在家中，多找一找就能找到。',
+            '风': '逢风影无踪—不用费心了，风随而动，物已丢失，基本是找不回来了。',
+            '叫': '逢叫正得行—找失物时如果迎面有人喊你，他或许知道失物的位置及消息，能够帮助到你。'
+        };
+
+        // 获取输入元素
+        const monthInput = document.getElementById('month');
+        const dayInput = document.getElementById('day');
+        const hourInput = document.getElementById('hour');
+
+        // 获取按钮和结果显示
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultDiv = document.getElementById('result');
+
+        // 计算逻辑
+        calculateBtn.addEventListener('click', () => {
+            const month = parseInt(monthInput.value);
+            const day = parseInt(dayInput.value);
+            const hour = parseInt(hourInput.value);
+
+            if (isNaN(month) || isNaN(day) || isNaN(hour)) {
+                resultDiv.textContent = '请输入有效的月、日、时辰值。';
+                return;
+            }
+
+            // 创建顺时针走动的顺序数组
+            const order = ['天', '地', '人', '水', '屋', '风', '叫'];
+
+            // 根据公式: (month + day + hour - 2) % 7
+            const total = month + day + hour - 2;
+            const remainder = ((total % 7) + 7) % 7; // 确保余数为正
+
+            // 映射余数到对应的符号
+            let resultSymbol;
+            if (remainder === 0) {
+                resultSymbol = '叫';
+            } else {
+                resultSymbol = order[remainder - 1];
+            }
+
+            // 显示结果和对应的提示
+            resultDiv.textContent = `结果: ${resultSymbol}\n${tips[resultSymbol]}`;
+        });
+    </script>
+</body>
+</html>
